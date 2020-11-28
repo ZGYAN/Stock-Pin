@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tv"
+    android:textColor="@color/black"
+    android:paddingLeft="8dp"
+    android:paddingVertical="20dp"
+    android:text="HELLO"
+    android:fontFamily="sans-serif"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:singleLine="true"
+    android:textSize="18sp"
+    android:layout_gravity="left" />

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+>
+    <item
+        android:id="@+id/settingsMenuButton"
+        android:title="@string/settings"
+        android:icon="@drawable/ic_settings"
+        />
+
+    <item
+        android:id="@+id/shareMenuButton"
+        android:title="@string/share"
+        android:icon="@drawable/ic_share"
+        />
+
+    <item
+        android:id="@+id/aboutMenuButton"
+        android:title="@string/about_app_menu"
+        android:icon="@drawable/about_img"
+        />
+
+
+</menu>

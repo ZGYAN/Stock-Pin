@@ -1,0 +1,62 @@
+<resources>
+    <string name="app_name">Stock Pin</string>
+    <string name="splash_screen_image">splash screen image</string>
+    <string name="future_lab_logo">Future Lab logo</string>
+    <string name="search_companies">Search companies...</string>
+    <string name="search_for_symbols_or_companies">Search for symbols or companies</string>
+    <string name="pin_image">pin image</string>
+    <string name="recents">Quick Access</string>
+    <string name="pin_stock">Pin Stock</string>
+    <string name="tick1">(GOOGL)</string>
+    <string name="sym1">Alphabet Inc</string>
+    <string name="tick2">(AAPL)</string>
+    <string name="high">High</string>
+    <string name="_1_500_00">$1,500.00</string>
+    <string name="sym2">Apple Inc</string>
+    <string name="tick3">(MSFT)</string>
+    <string name="sym3">Microsoft Corp</string>
+    <string name="googl">GOOGL</string>
+    <string name="low">Low</string>
+    <string name="google_inc">Google Inc.</string>
+    <string name="_0000_00">+0000.00</string>
+    <string name="_0000_00_">(-0000.00%)</string>
+    <string name="open">Open</string>
+    <string name="volume">Volume</string>
+    <string name="_100_000_000">100,000,000</string>
+    <string name="average_volume">Avg Volume</string>
+    <string name="market_cap">Market Cap</string>
+    <string name="marketCAP">$100.00B</string>
+    <string name="refresh">refresh</string>
+    <string name="markets_closed">Markets Closed</string>
+    <string name="loading">Loading...</string>
+    <string name="error_refresh">error refresh</string>
+    <string name="dismiss">dismiss</string>
+    <string name="permission_statement">This feature needs permission for drawing over other apps. If not granted, a simple notification will be created.</string>
+    <string name="symbol_direction">Symbol direction</string>
+    <string name="main_image">main image</string>
+    <string name="remove">Remove</string>
+    <string name="bubble_icon">bubble_icon</string>
+    <string name="trash">trash</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="disable">Disable</string>
+    <string name="enable">Enable</string>
+    <string name="item">item</string>
+    <string name="regular">Notification</string>
+    <string name="bubble">Bubble</string>
+    <string name="close">close</string>
+    <string name="about_app">About</string>
+    <string name="about_stock_pin">About Stock Pin</string>
+    <string name="app_description">Search and pin your favorite stocks to your screen for quick access to market data. Information is updated periodically and presented in a clean, simple way!</string>
+    <string name="developer">Developer: Achuna Ofonedu</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="testFullscreenAd">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="testBannerAd">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="at_close">at close</string>
+    <string name="settings">Settings</string>
+    <string name="share">Share</string>
+    <string name="about_app_menu">About App</string>
+
+
+
+
+</resources>

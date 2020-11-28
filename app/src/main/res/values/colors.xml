@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3626F0</color>
+    <color name="colorAccent">#02E3CD</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="whitefade">#B3FFFFFF</color>
+    <color name="gray">#606060</color>
+    <color name="transparent">#00FFFFFF</color>
+
+    <color name="green">#31D339</color>
+    <color name="red">#FF5757</color>
+    <color name="pin_color">#035DE5</color>
+<!-- Custom Colors -->
+
+
+    <color name="lightBlue">#006CC3</color>
+    <color name="blue_circle">#56bbff</color>
+
+    <color name="redCard">#930300</color>
+    <color name="red_circle">#FF5C59</color>
+
+    <color name="goldCard">#A19100</color>
+    <color name="gold_circle">#E1CA00</color>
+
+    <color name="greenCard">#4B8C00</color>
+    <color name="green_circle">#28C62E</color>
+
+    <color name="purpleCard">#7C0091</color>
+    <color name="purple_circle">#AF24C6</color>
+
+</resources>

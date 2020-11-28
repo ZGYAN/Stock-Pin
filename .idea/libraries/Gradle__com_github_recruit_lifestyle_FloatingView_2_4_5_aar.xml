@@ -1,0 +1,18 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.recruit-lifestyle:FloatingView:2.4.5@aar">
+    <ANNOTATIONS>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/4238618378e6f2dbe4d649921ed70650/jetified-FloatingView-2.4.5/annotations.zip!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/4238618378e6f2dbe4d649921ed70650/jetified-FloatingView-2.4.5/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/4238618378e6f2dbe4d649921ed70650/jetified-FloatingView-2.4.5/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/4238618378e6f2dbe4d649921ed70650/jetified-FloatingView-2.4.5/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.recruit-lifestyle/FloatingView/2.4.5/9a1f9130132e0933c4b49d262c18fa2f95a5adf4/FloatingView-2.4.5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.recruit-lifestyle/FloatingView/2.4.5/aec8645a85176a5e7d810816ca0a88274de946e6/FloatingView-2.4.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

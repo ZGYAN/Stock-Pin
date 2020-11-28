@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/transparent">
+
+    <com.stockpin.stockpinapp.CustomAutoComplete
+        android:id="@+id/company_search"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/search_border"
+        android:drawableStart="@drawable/search_img"
+        android:drawableEnd="@drawable/ic_settings"
+        android:inputType="text"
+        android:maxLines="1"
+        android:completionThreshold="1"
+        android:imeOptions="actionSearch"
+        android:drawablePadding="8dp"
+        android:fontFamily="sans-serif-light"
+        android:hint="@string/search_companies"
+        android:padding="8dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:textSize="18sp"
+        android:drawableLeft="@drawable/search_img"
+        android:drawableRight="@drawable/ic_settings">
+
+
+    </com.stockpin.stockpinapp.CustomAutoComplete>
+
+
+</LinearLayout>

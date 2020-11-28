@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="none"
+    android:id="@+id/bubbleScroll"
+    >
+
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:background="@color/transparent"
+        android:id="@+id/bubblepopUpLayout"
+        android:gravity="center">
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="385dp"
+            android:layout_alignParentStart="true"
+            app:cardBackgroundColor="@color/lightBlue"
+            android:id="@+id/bppopupCard"
+            app:cardCornerRadius="26dp"
+            android:layout_alignParentLeft="true">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+
+                <TextView
+                    android:id="@+id/bpticker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:text="@string/googl"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.079"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/bpcompany_name"
+                    android:layout_width="0dp"
+                    android:width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/google_inc"
+                    android:textColor="@color/whitefade"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/bpticker"
+                    app:layout_constraintEnd_toStartOf="@+id/bprefresh_btn"
+                    app:layout_constraintStart_toEndOf="@+id/bpticker"
+                    android:layout_marginLeft="8dp" />
+
+                <TextView
+                    android:id="@+id/bpprice"
+                    style="@style/shadowText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/_1_500_00"
+                    android:textColor="@color/white"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/bpticker"
+                    app:layout_constraintTop_toBottomOf="@+id/bpticker" />
+
+                <TextView
+                    android:id="@+id/closeBpprice"
+                    style="@style/shadowText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="@string/_1_500_00"
+                    android:textColor="@color/whitefade"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.92"
+                    app:layout_constraintStart_toStartOf="@+id/bpticker"
+                    app:layout_constraintTop_toBottomOf="@+id/closeBpIndicator" />
+
+                <TextView
+                    android:id="@+id/closeBpIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    style="@style/shadowText"
+                    android:text="@string/at_close"
+                    android:textColor="@color/whitefade"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.911"
+                    app:layout_constraintStart_toStartOf="@+id/bpticker"
+                    app:layout_constraintTop_toBottomOf="@+id/bpticker" />
+
+                <TextView
+                    android:id="@+id/bpdollar_change"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/_0000_00"
+                    android:textColor="@color/green"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    style="@style/shadowText"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/bpprice"
+                    app:layout_constraintTop_toBottomOf="@+id/bpprice" />
+
+                <TextView
+                    android:id="@+id/closeBpdollar_change"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:ellipsize="end"
+                    android:gravity="right"
+                    android:maxLines="1"
+                    android:text="@string/_0000_00"
+                    android:textColor="@color/green"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    style="@style/shadowText"
+                    app:layout_constraintEnd_toStartOf="@+id/closeBppercent_change"
+                    app:layout_constraintTop_toTopOf="@+id/closeBppercent_change"
+                    android:layout_marginRight="5dp" />
+
+                <TextView
+                    android:id="@+id/bppercent_change"
+                    style="@style/shadowText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/_0000_00_"
+                    android:textColor="@color/red"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/bpdollar_change"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/bpdollar_change"
+                    android:layout_marginLeft="6dp" />
+
+                <TextView
+                    android:id="@+id/closeBppercent_change"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/shadowText"
+                    android:ellipsize="end"
+                    android:gravity="right"
+                    android:maxLines="1"
+                    android:text="@string/_0000_00_"
+                    android:textColor="@color/red"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/bpdollar_change"
+                    app:layout_constraintEnd_toEndOf="@+id/closeBpprice"
+                    app:layout_constraintTop_toBottomOf="@+id/closeBpprice" />
+
+                <TextView
+                    android:id="@+id/bpopen_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/open"
+                    android:textColor="@color/whitefade"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toStartOf="@+id/bpvolume_title"
+                    app:layout_constraintHorizontal_bias="0.311"
+                    app:layout_constraintStart_toStartOf="@+id/bpdollar_change"
+                    app:layout_constraintTop_toBottomOf="@+id/bpdollar_change" />
+
+                <TextView
+                    android:id="@+id/bpopen_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_1_500_00"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/bpopen_title"
+                    app:layout_constraintTop_toBottomOf="@+id/bpopen_title" />
+
+                <TextView
+                    android:id="@+id/bphigh_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/high"
+                    android:textColor="@color/whitefade"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toStartOf="@+id/bpavg_volume_title"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/bpopen_price"
+                    app:layout_constraintTop_toBottomOf="@+id/bpopen_price" />
+
+                <TextView
+                    android:id="@+id/bphigh_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_1_500_00"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/bpaverage_volume_unit"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/bphigh_title"
+                    app:layout_constraintTop_toBottomOf="@+id/bphigh_title" />
+
+                <TextView
+                    android:id="@+id/bplow_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/low"
+                    android:textColor="@color/whitefade"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toStartOf="@+id/bpmarketCap_title"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/bphigh_price"
+                    app:layout_constraintTop_toBottomOf="@+id/bphigh_price" />
+
+                <TextView
+                    android:id="@+id/bplow_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_1_500_00"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/bplow_title"
+                    app:layout_constraintTop_toBottomOf="@+id/bplow_title" />
+
+                <TextView
+                    android:id="@+id/bpvolume_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/volume"
+                    android:textColor="@color/whitefade"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toEndOf="@+id/bpmarketStatus"
+                    app:layout_constraintTop_toBottomOf="@+id/bpdollar_change" />
+
+                <TextView
+                    android:id="@+id/bpvolume_unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_100_000_000"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/bpvolume_title"
+                    app:layout_constraintTop_toBottomOf="@+id/bpvolume_title" />
+
+                <TextView
+                    android:id="@+id/bpavg_volume_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginEnd="84dp"
+                    android:text="@string/average_volume"
+                    android:textColor="@color/whitefade"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/bpvolume_unit"
+                    app:layout_constraintTop_toBottomOf="@+id/bpvolume_unit"
+                    android:layout_marginRight="84dp" />
+
+                <TextView
+                    android:id="@+id/bpaverage_volume_unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_100_000_000"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/bpavg_volume_title"
+                    app:layout_constraintTop_toBottomOf="@+id/bpavg_volume_title" />
+
+                <TextView
+                    android:id="@+id/bpmarketCap_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/market_cap"
+                    android:textColor="@color/whitefade"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/bpaverage_volume_unit"
+                    app:layout_constraintTop_toBottomOf="@+id/bpaverage_volume_unit" />
+
+                <TextView
+                    android:id="@+id/bpmarketCap_listing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/marketCAP"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/bpmarketCap_title"
+                    app:layout_constraintTop_toBottomOf="@+id/bpmarketCap_title" />
+
+                <ImageButton
+                    android:id="@+id/bprefresh_btn"
+                    android:layout_width="36dp"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/refresh"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/refresh_img_foreground"
+                    android:layout_marginRight="4dp"
+                    tools:ignore="VectorDrawableCompat" />
+
+                <TextView
+                    android:id="@+id/bpmarketStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/white"
+                    app:layout_constraintBottom_toTopOf="@+id/bpcompany_name"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.497"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.441"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/bpdirection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/symbol_direction"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bpmain_img"
+                    android:gravity="center_horizontal" />
+
+                <ImageView
+                    android:id="@+id/bpmain_img"
+                    android:layout_width="137dp"
+                    android:layout_height="101dp"
+                    android:layout_marginTop="100dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/icon_trans"
+                    android:contentDescription="@string/main_image" />
+
+
+                <ImageButton
+                    android:id="@+id/bperror_refresh"
+                    android:layout_width="64dp"
+                    android:layout_height="49dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/transparent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.498"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bpdirection"
+                    app:srcCompat="@drawable/error_refresh_foreground"
+                    android:contentDescription="@string/error_refresh"
+                    tools:ignore="VectorDrawableCompat" />
+
+                <ImageButton
+                    android:id="@+id/bpopen_app"
+                    android:layout_width="24dp"
+                    android:layout_height="21dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/open"
+                    app:layout_constraintStart_toEndOf="@+id/bpmarketStatus"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/open_app_ic"
+                    android:layout_marginLeft="8dp"
+                    tools:ignore="VectorDrawableCompat" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycleview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="72dp"
+                    android:layout_marginTop="40dp"
+                    android:scrollbars="horizontal"
+                    android:layout_gravity="center_horizontal"
+                    android:foregroundGravity="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bplow_price" />
+
+                <Button
+                    android:id="@+id/remove_btn"
+                    android:layout_width="75dp"
+                    android:layout_height="25dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@drawable/simple_button"
+                    android:gravity="center"
+                    android:text="@string/remove"
+                    android:textAlignment="center"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    app:layout_constraintBottom_toTopOf="@+id/recycleview"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.498"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <ImageView
+                    android:id="@+id/bubbleDayStatusIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintStart_toEndOf="@+id/bppercent_change"
+                    app:layout_constraintTop_toTopOf="@+id/bppercent_change"
+                    app:srcCompat="@drawable/ic_day"
+                    android:layout_marginLeft="8dp"
+                    tools:ignore="VectorDrawableCompat" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
+</ScrollView>
