@@ -3,6 +3,7 @@ package com.stockpin.stockpinapp;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
+import android.util.Log;
 
 public class NetworkRequest {
 
@@ -29,7 +30,9 @@ public class NetworkRequest {
     }
 
     public String getChart(String symbol, String startEpoch, String dataGranularity) {
-        return chartLink + symbol +"?symbol=" + symbol + "&period1=" + startEpoch + "&period2=9999999999&interval= "+ dataGranularity +"&includePrePost=true";
+        Log.i("error",chartLink + symbol +"?symbol=" + symbol + "&period1=" + startEpoch + "&period2=9999999999&interval="+ dataGranularity +"&includePrePost=true");
+        return chartLink + symbol +"?symbol=" + symbol + "&period1=" + startEpoch + "&period2=9999999999&interval="+ dataGranularity +"&includePrePost=true";
+
     }
 
     /**

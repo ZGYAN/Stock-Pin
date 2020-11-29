@@ -73,16 +73,17 @@
 
     <Button
         android:id="@+id/pin_btn"
-        android:layout_width="144dp"
-        android:layout_height="49dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="18dp"
+        android:layout_marginTop="100dp"
         android:background="@drawable/pin_button"
         android:text="@string/pin_stock"
         android:textColor="@color/white"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/low_price" />
+        app:layout_constraintTop_toBottomOf="@+id/direction_text" />
 
     <androidx.gridlayout.widget.GridLayout
         android:id="@+id/gridLayout"
@@ -276,6 +277,7 @@
         android:textColor="@color/white"
         android:textSize="32sp"
         android:textStyle="bold"
+        android:onClick="toggleChart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/ticker"
@@ -318,6 +320,7 @@
         android:layout_marginTop="2dp"
         android:text="@string/_0000_00"
         android:textColor="@color/green"
+        android:onClick="toggleChart"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -332,6 +335,7 @@
         android:gravity="right"
         android:text="@string/_0000_00"
         android:textColor="@color/green"
+        android:onClick="toggleChart"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/atClosePercent_change"
@@ -347,6 +351,7 @@
         android:textColor="@color/red"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:onClick="toggleChart"
         app:layout_constraintBottom_toBottomOf="@+id/dollar_change"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.03"
@@ -360,10 +365,19 @@
         android:textColor="@color/red"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:onClick="toggleChart"
         app:layout_constraintBottom_toBottomOf="@+id/atCloseDollar_change"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.924"
         app:layout_constraintStart_toEndOf="@+id/dollar_change" />
+
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/stockChart"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layout_constraintTop_toBottomOf="@+id/percent_change"
+        />
 
     <TextView
         android:id="@+id/open_title"
@@ -371,6 +385,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/open"
+        android:onClick="toggleChart"
         android:textColor="@color/whitefade"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/volume_title"
@@ -395,6 +410,7 @@
         android:id="@+id/high_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="toggleChart"
         android:layout_marginTop="8dp"
         android:text="@string/high"
         android:textColor="@color/whitefade"
@@ -407,6 +423,7 @@
     <TextView
         android:id="@+id/high_price"
         android:layout_width="wrap_content"
+        android:onClick="toggleChart"
         android:layout_height="wrap_content"
         android:text="@string/_1_500_00"
         android:textColor="@color/white"
@@ -421,6 +438,7 @@
         android:id="@+id/low_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="toggleChart"
         android:layout_marginTop="10dp"
         android:text="@string/low"
         android:textColor="@color/whitefade"
@@ -434,6 +452,7 @@
         android:id="@+id/low_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="toggleChart"
         android:text="@string/_1_500_00"
         android:textSize="18sp"
         android:textColor="@color/white"
@@ -447,6 +466,7 @@
         android:id="@+id/volume_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="toggleChart"
         android:layout_marginTop="16dp"
         android:text="@string/volume"
         android:textColor="@color/whitefade"
@@ -458,6 +478,7 @@
         android:id="@+id/volume_unit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="toggleChart"
         android:text="@string/_100_000_000"
         android:textSize="18sp"
         android:textColor="@color/white"
@@ -469,6 +490,7 @@
 
     <TextView
         android:id="@+id/avg_volume_title"
+        android:onClick="toggleChart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -484,6 +506,7 @@
 
     <TextView
         android:id="@+id/average_volume_unit"
+        android:onClick="toggleChart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/_100_000_000"
@@ -498,6 +521,7 @@
     <TextView
         android:id="@+id/marketCapTitle"
         android:layout_width="wrap_content"
+        android:onClick="toggleChart"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="@string/market_cap"
@@ -511,6 +535,7 @@
     <TextView
         android:id="@+id/marketCap_listing"
         android:layout_width="wrap_content"
+        android:onClick="toggleChart"
         android:layout_height="wrap_content"
         android:text="@string/marketCAP"
         android:textSize="18sp"
@@ -570,6 +595,7 @@
         app:layout_constraintStart_toEndOf="@+id/percent_change"
         app:layout_constraintTop_toTopOf="@+id/percent_change"
         app:srcCompat="@drawable/ic_day"
+        android:onClick="toggleChart"
         android:layout_marginLeft="10dp"
         tools:ignore="VectorDrawableCompat" />
 
@@ -583,6 +609,22 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_menu"
         android:layout_marginLeft="20dp"
+        tools:ignore="VectorDrawableCompat" />
+
+    <ImageView
+        android:id="@+id/chartIndicator"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/red_circle_back"
+        android:onClick="toggleChart"
+        android:padding="2dp"
+        android:rotationX="180"
+        app:layout_constraintStart_toEndOf="@+id/price"
+        app:layout_constraintTop_toTopOf="@+id/price"
+        app:srcCompat="@drawable/ic_notify"
         tools:ignore="VectorDrawableCompat" />
 
 
