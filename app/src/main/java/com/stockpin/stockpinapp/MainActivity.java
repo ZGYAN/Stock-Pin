@@ -38,7 +38,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -61,28 +60,20 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.Utils;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.common.internal.IAccountAccessor;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -99,8 +90,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 
@@ -118,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
     TextView[] textViews = {direction_text, marketStatus, ticker, company, price, dollar, percent, open, open_price, high, high_price, low, low_price, vol, vol_unit, avg_vol, avg_vol_unit, market_cap, market_cap_unit};
     Integer[] ids = {R.id.direction_text, R.id.markets_status, R.id.ticker, R.id.company_name, R.id.price, R.id.dollar_change, R.id.percent_change, R.id.open_title, R.id.open_price, R.id.high_title, R.id.high_price, R.id.low_title, R.id.low_price, R.id.volume_title, R.id.volume_unit, R.id.avg_volume_title, R.id.average_volume_unit, R.id.marketCapTitle, R.id.marketCap_listing};
     CardView card1, card2, card3;
-    Button pinButton;
+    Button pinButton, viewChart;
     ConstraintLayout mainLayout;
     ScrollView mainScroll;
     Button enable_btn, disable_btn;
@@ -136,16 +125,20 @@ public class MainActivity extends AppCompatActivity {
     //Auto refresh components
     final int MARKET_HOURS_REFRESH_RATE = 5000;
     final int PREP_HOURS_REFRESH_RATE = 10000;
-    final int OUTSIDE_HOURS_REFRESH_RATE = 20000;
+    final int OUTSIDE_HOURS_REFRESH_RATE = 30000;
     final Handler refreshHandler = new Handler();
     SwipeRefreshLayout refreshLayout;
 
     //Line Chart
     LineChart chart;
-    final long ONE_MONTH_EPOCH_INTERVAL = 2678400;
     final long ONE_DAY_EPOCH_INTERVAL = 86400;
     boolean isChartFocus = true;
     ImageView priceStatus;
+    Button oneDay, oneMonth, threeMonths, oneYear, allTime;
+    ImageButton moreInfo;
+    String timeSpan = "1d";
+    double dollarChange, percentChange, currentPrice, chartPreviousClose;
+    long startEpoch;
 
     String state = "Market Closed";
     private final CharSequence channelName = "Stock Pin Notifications";
@@ -338,21 +331,23 @@ public class MainActivity extends AppCompatActivity {
                 if (ticker.getVisibility() == View.VISIBLE) {
                     refreshLayout.setColorSchemeColors(Color.BLUE);
                     stopRepeating();
-                    getStock(ticker.getText().toString(), true);
+                    getStock(ticker.getText().toString(), true, timeSpan);
                     refreshLayout.setRefreshing(true);
                 } else {
                     String searchString = search.getText().toString();
                     if (!netRequest.isConnected()) {
                         Snackbar.make(mainLayout, "No Connection", BaseTransientBottomBar.LENGTH_LONG).show();
                     } else if (searchString.contains("(") && searchString.contains(")")) {
-                        getStock(extractTicker(searchString), false);
+                        getStock(extractTicker(searchString), false, "1d");
                     } else {
-                        getStock(searchString, false);
+                        getStock(searchString, false, "1d");
                     }
                     refreshLayout.setRefreshing(true);
                 }
             }
         });
+
+
 
         chart.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -360,12 +355,9 @@ public class MainActivity extends AppCompatActivity {
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_UP:
                         chart.highlightValue(null);
-                        refreshLayout.setEnabled(true);
                         break;
-                    case MotionEvent.ACTION_DOWN:
-                    case MotionEvent.ACTION_SCROLL:
-                        refreshLayout.setEnabled(false);
-                        break;
+                    default:
+//                        chart.highlightValue(null);
                 }
                 return false;
             }
@@ -419,19 +411,19 @@ public class MainActivity extends AppCompatActivity {
                         String tick = search.getText().toString().toUpperCase();
                         if (ticker.getVisibility() == View.VISIBLE && tick.equals(ticker.getText().toString())) {
                             stopRepeating();
-                            getStock(tick, true);
+                            getStock(tick, true, timeSpan);
                         } else {
                             if(tick.contains("(") && tick.contains(")")) {
                                 if (tick.indexOf("(") < tick.indexOf(")")) {
                                     stopRepeating();
-                                    getStock(extractTicker(tick), false);
+                                    getStock(extractTicker(tick), false, "1d");
                                 } else {
                                     stopRepeating();
-                                    getStock(tick, false);
+                                    getStock(tick, false, "1d");
                                 }
                             } else {
                                 stopRepeating();
-                                getStock(tick, false);
+                                getStock(tick, false, "1d");
                             }
                         }
                     }
@@ -454,10 +446,10 @@ public class MainActivity extends AppCompatActivity {
 
                 if (ticker.getVisibility() == View.VISIBLE && tick.equals(ticker.getText().toString())) {
                     stopRepeating();
-                    getStock(tick, true);
+                    getStock(tick, true, timeSpan);
                 } else {
                     stopRepeating();
-                    getStock(tick, false);
+                    getStock(tick, false, "1d");
                 }
 
                 search.clearFocus(); //dismiss search bar
@@ -528,10 +520,10 @@ public class MainActivity extends AppCompatActivity {
                     String tick = extractTicker(recentTicker1.getText().toString());
                     if (ticker.getVisibility() == View.VISIBLE && tick.equals(ticker.getText().toString())) {
                         stopRepeating();
-                        getStock(tick, true);
+                        getStock(tick, true, timeSpan);
                     } else {
                         stopRepeating();
-                        getStock(tick, false);
+                        getStock(tick, false, "1d");
                     }
                     search.setText("");
                 }
@@ -547,10 +539,10 @@ public class MainActivity extends AppCompatActivity {
                     String tick = extractTicker(recentTicker2.getText().toString());
                     if (ticker.getVisibility() == View.VISIBLE && tick.equals(ticker.getText().toString())) {
                         stopRepeating();
-                        getStock(tick, true);
+                        getStock(tick, true, timeSpan);
                     } else {
                         stopRepeating();
-                        getStock(tick, false);
+                        getStock(tick, false, "1d");
                     }
                     search.setText("");
                 }
@@ -566,17 +558,16 @@ public class MainActivity extends AppCompatActivity {
 
                     if (ticker.getVisibility() == View.VISIBLE && tick.equals(ticker.getText().toString())) {
                         stopRepeating();
-                        getStock(tick, true);
+                        getStock(tick, true, timeSpan);
                     } else {
                         stopRepeating();
-                        getStock(tick, false);
+                        getStock(tick, false, "1d");
                     }
                     search.setText("");
                 }
 
             }
         });
-
 
         error_refresh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -585,12 +576,58 @@ public class MainActivity extends AppCompatActivity {
                 if (!netRequest.isConnected()) {
                     Snackbar.make(mainLayout, "No Connection", BaseTransientBottomBar.LENGTH_LONG).show();
                 } else if (searchString.contains("(") && searchString.contains(")")) {
-                    getStock(extractTicker(searchString), false);
+                    getStock(extractTicker(searchString), false, "1d");
                 } else {
-                    getStock(searchString, false);
+                    getStock(searchString, false, "1d");
                 }
             }
         });
+
+        oneDay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleTime();
+                String stock = ticker.getText().toString();
+                getStock(stock, false, "1d");
+            }
+        });
+
+        oneMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleTime();
+                String stock = ticker.getText().toString();
+                getStock(stock, false, "1month");
+            }
+        });
+
+        threeMonths.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleTime();
+                String stock = ticker.getText().toString();
+                getStock(stock, false, "3m");
+            }
+        });
+
+        oneYear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleTime();
+                String stock = ticker.getText().toString();
+                getStock(stock, false, "1y");
+            }
+        });
+        allTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleTime();
+                String stock = ticker.getText().toString();
+                getStock(stock, false, "all");
+            }
+        });
+
+
     }
 
 
@@ -599,7 +636,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param symbol
      */
-    public void getStock(final String symbol, final boolean isRefresh) {
+    public void getStock(final String symbol, final boolean isRefresh, final String timeInterval) {
 
         if(!isRefresh) {
             stopRepeating();
@@ -633,9 +670,9 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             JSONObject stock = response.getJSONObject("quoteResponse").getJSONArray("result").getJSONObject(0);
 
-                            String priceString = "";
-                            String dollarString = "";
-                            String percentString = "";
+//                            String priceString = "";
+//                            String dollarString = "";
+//                            String percentString = "";
                             String openString = "";
                             String highString = "";
                             String lowString = "";
@@ -664,22 +701,25 @@ public class MainActivity extends AppCompatActivity {
                             try { stockAvgVolume = stock.getLong("averageDailyVolume3Month"); } catch (Exception e) {avgVolString = "--"; }
                             try { stockMarketCap = stock.getLong("marketCap"); } catch (Exception e) {marketCapString = "--"; }
                             try { marketState = stock.getString("marketState"); } catch (Exception e) { marketState = ""; }
+                            try { startEpoch = stock.getLong("regularMarketTime"); } catch (Exception e) { startEpoch = System.currentTimeMillis() / 1000; }
 
 
-                            if(marketState.contains("CLOSED") || marketState.equals("PREPRE") || marketState.equals("POSTPOST")) {
+                            if(marketState.equals("POSTPOST")) {
                                 marketState = "Market Closed";
-                            } else if(marketState.contains("REGULAR")) {
+                            } else if (marketState.contains("CLOSED") || marketState.equals("PREPRE")) {
+                                marketState = "Market Closed ";
+                            }   else if(marketState.contains("REGULAR")) {
                                 marketState = "Market Open";
                             } else if(marketState.equals("PRE")) {
                                 marketState = "Pre-Market";
                             } else if(marketState.equals("POST")) {
                                 marketState = "After Hours";
-                            } else {
+                            }  else {
                                 marketState = "";
                             }
 
                             //Set pre or post market data
-                            if (marketState.equals("After Hours")) {
+                            if (marketState.equals("After Hours") || marketState.equals("Market Closed")) {
                                 try {
                                     closeStockPrice = stockPrice;
                                     closeStockDollarChange = stockDollarChange;
@@ -711,16 +751,16 @@ public class MainActivity extends AppCompatActivity {
                                 unitFormat.setDecimalSeparatorAlwaysShown(true);
                                 unitFormat.setMinimumFractionDigits(2);
                             }
-                            if (stockPercentChange > 0) { //Specify change
-                                percentString = "(" + unitFormat.format(stockPercentChange) + "%)";
-                                dollarString = "+" + unitFormat.format(stockDollarChange);
-                            } else {
-                                double stockPercentChangeVal = Math.abs(stockPercentChange);
-                                percentString = "(" + unitFormat.format(stockPercentChangeVal) + "%)";
-                                dollarString = unitFormat.format(stockDollarChange);
-                            }
+//                            if (stockPercentChange > 0) { //Specify change
+//                                percentString = "(" + unitFormat.format(stockPercentChange) + "%)";
+//                                dollarString = "+" + unitFormat.format(stockDollarChange);
+//                            } else {
+//                                double stockPercentChangeVal = Math.abs(stockPercentChange);
+//                                percentString = "(" + unitFormat.format(stockPercentChangeVal) + "%)";
+//                                dollarString = unitFormat.format(stockDollarChange);
+//                            }
                             //At close check
-                            if(marketState.equals("After Hours") || marketState.equals("Pre-Market")) {
+                            if(marketState.equals("After Hours") || marketState.equals("Pre-Market") || marketState.equals("Market Closed")) {
                                 if (closeStockPercentChange >= 0) { //Specify change
                                     String closePercent = "(" + unitFormat.format(closeStockPercentChange) + "%)";
                                     String closeDollarString = "+" + unitFormat.format(closeStockDollarChange);
@@ -739,17 +779,19 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 String closePriceString = "$" + unitFormat.format(closeStockPrice);
                                 atClosePrice.setText(closePriceString);
-                                if(symbol.startsWith("^")) { //for index and ETFs
-                                    atCloseIndicator.setVisibility(View.INVISIBLE);
-                                    atClosePercent.setVisibility(View.INVISIBLE);
-                                    atCloseChange.setVisibility(View.INVISIBLE);
-                                    atClosePrice.setVisibility(View.INVISIBLE);
-                                } else {
-                                    atCloseIndicator.setVisibility(View.VISIBLE);
-                                    atClosePercent.setVisibility(View.VISIBLE);
-                                    atCloseChange.setVisibility(View.VISIBLE);
-                                    atClosePrice.setVisibility(View.VISIBLE);
-                                }
+//                                if(!isChartFocus) {
+//                                    if(symbol.startsWith("^")) { //for index and ETFs
+//                                        atCloseIndicator.setVisibility(View.INVISIBLE);
+//                                        atClosePercent.setVisibility(View.INVISIBLE);
+//                                        atCloseChange.setVisibility(View.INVISIBLE);
+//                                        atClosePrice.setVisibility(View.INVISIBLE);
+//                                    } else {
+//                                        atCloseIndicator.setVisibility(View.VISIBLE);
+//                                        atClosePercent.setVisibility(View.VISIBLE);
+//                                        atCloseChange.setVisibility(View.VISIBLE);
+//                                        atClosePrice.setVisibility(View.VISIBLE);
+//                                    }
+//                                }
                             }
 
                             if(marketState.equals("Market Open")) {
@@ -759,7 +801,7 @@ public class MainActivity extends AppCompatActivity {
                                 atClosePrice.setVisibility(View.INVISIBLE);
                             }
 
-                            priceString = "$" + unitFormat.format(stockPrice);
+                            //stockPrice = Double.parseDouble(unitFormat.format(stockPrice));
                             if(openString.length() == 0) openString = "$" + unitFormat.format(stockOpen);
                             if(highString.length() == 0) highString = "$" + unitFormat.format(stockHigh);
                             if(lowString.length() == 0) lowString = "$" + unitFormat.format(stockLow);
@@ -771,31 +813,24 @@ public class MainActivity extends AppCompatActivity {
                             if(avgVolString.length() == 0) avgVolString = simpleVolume(unitFormat.format(stockAvgVolume));
                             if(marketCapString.length() == 0) marketCapString = "$"+simpleMarketCap(unitFormat.format(stockMarketCap));
 
-                            if (stockPercentChange < 0) { //Set color for change
-                                dollar.setTextColor(getResources().getColor(R.color.red));
-                                percent.setTextColor(getResources().getColor(R.color.red));
-                                priceStatus.setRotationX(180);
-                            } else {
-                                dollar.setTextColor(getResources().getColor(R.color.green));
-                                percent.setTextColor(getResources().getColor(R.color.green));
-                                priceStatus.setRotationX(0);
-                            }
+//                                if (stockPercentChange < 0) { //Set color for change
+//                                    dollar.setTextColor(getResources().getColor(R.color.red));
+//                                    percent.setTextColor(getResources().getColor(R.color.red));
+//                                    priceStatus.setRotationX(180);
+//                                } else {
+//                                    dollar.setTextColor(getResources().getColor(R.color.green));
+//                                    percent.setTextColor(getResources().getColor(R.color.green));
+//                                    priceStatus.setRotationX(0);
+//                                }
+//
 
-                            //Blink change
-                            if(isRefresh && !price.getText().toString().equals(priceString)) {
-                                String cp = price.getText().toString().substring(1).replace(",", "");
-                                String np = priceString.substring(1).replace(",", "");
-                                double current = Double.parseDouble(cp);
-                                double newPrice = Double.parseDouble(np);
-                                blickChange(newPrice - current);
-                            }
 
                             //Display and update stock information
                             ticker.setText(stockSymbol);
                             company.setText(stockName);
-                            price.setText(priceString);
-                            dollar.setText(dollarString);
-                            percent.setText(percentString);
+//                            price.setText(priceString);
+//                            dollar.setText(dollarString);
+//                            percent.setText(percentString);
                             open_price.setText(openString);
                             high_price.setText(highString);
                             low_price.setText(lowString);
@@ -807,7 +842,7 @@ public class MainActivity extends AppCompatActivity {
                             updateRecents(stockSymbol, stockName);
 
 
-                            if(marketState.equals("Market Closed")) {
+                            if(marketState.equals("Market Closed") || marketState.equals("Market Closed ")) {
                                 dayStatus.setImageResource(R.drawable.ic_sleep);
                             } else if(marketState.equals("Pre-Market")) {
                                 dayStatus.setImageResource(R.drawable.ic_rise);
@@ -819,21 +854,43 @@ public class MainActivity extends AppCompatActivity {
                                 dayStatus.setVisibility(View.INVISIBLE);
                             }
 
-                            //showInfo();
-
-//                            stopRepeating();
-//
-//                            startRepearting();
+                            state = marketState;
 
                             //Load chart
-                            getChart(symbol, "1d", isRefresh);
+                            switch (timeInterval) {
+                                case "1d":
+                                    getChart(symbol, "1m", isRefresh);
+                                    break;
+                                case "1month":
+                                    getChart(symbol, "15m", isRefresh);
+                                    break;
+                                case "3m":
+                                    getChart(symbol, "1h", isRefresh);
+                                    break;
+                                case "1y":
+                                    getChart(symbol, "1d", isRefresh);
+                                    break;
+                                case "all":
+                                    getChart(symbol, "1mo", isRefresh);
+                                    break;
+                            }
 
-//                            marketStatus.setText(marketState);
-//                            marketStatus.setVisibility(View.VISIBLE);
-
-                            state = marketState;
+//                            if(state.equals("Market Closed")) {
+//                                try {
+//                                //Check for post data
+//                                    currentPrice = stock.getDouble("postMarketPrice");
+//                                    dollarChange = stock.getDouble("postMarketChange");
+//                                    percentChange = stock.getDouble("postMarketChangePercent");
+//                            } catch (JSONException j) {
+//                                    dollarChange = stockDollarChange;
+//                                    percentChange = stockPercentChange;
+//                                    currentPrice = stockPrice;
+//                                }
 //
-//                            direction_text.setText(R.string.search_for_symbols_or_companies);
+//                            }
+                            dollarChange = stockDollarChange;
+                            percentChange = stockPercentChange;
+                            currentPrice = stockPrice;
 
                         } catch (JSONException e) {
                             stopRepeating();
@@ -892,10 +949,35 @@ public class MainActivity extends AppCompatActivity {
             RequestQueue stockRequestQueue = Volley.newRequestQueue(this);
             //JsonArray Request instance
 
-            long current = System.currentTimeMillis() / 1000;
-            long startEpoch = current - 70*ONE_DAY_EPOCH_INTERVAL;
 
-            JsonObjectRequest stockRequest = new JsonObjectRequest(Request.Method.GET, netRequest.getChart(symbol, startEpoch+"", dataGranularity), null, new Response.Listener<JSONObject>() {
+            long lastEpoch = startEpoch - ONE_DAY_EPOCH_INTERVAL; //one day
+
+
+            switch (dataGranularity) {
+                case "1m": lastEpoch = startEpoch - ONE_DAY_EPOCH_INTERVAL; //one day
+                    break;
+                case "15m":
+                    lastEpoch = startEpoch - 30 * ONE_DAY_EPOCH_INTERVAL; //1 month
+                    break;
+                case "1h":
+                    lastEpoch = startEpoch - 90 * ONE_DAY_EPOCH_INTERVAL; //3 months
+                    break;
+                case "1d":
+                    lastEpoch = startEpoch - 365 * ONE_DAY_EPOCH_INTERVAL; //1 year
+                    break;
+                case "1mo":
+                    lastEpoch = 0; //oldest data point
+                    break;
+            }
+
+            String chartLink = "";
+            if (state.equals("After Hours") || state.equals("Pre-Market") || !dataGranularity.equals("1m")) {
+                chartLink = netRequest.getChart(symbol, lastEpoch + "", dataGranularity, true);
+            } else {
+                chartLink = netRequest.getChart(symbol, lastEpoch + "", dataGranularity, false);
+            }
+
+            JsonObjectRequest stockRequest = new JsonObjectRequest(Request.Method.GET, chartLink, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     //Check for API error
@@ -917,30 +999,20 @@ public class MainActivity extends AppCompatActivity {
                             JSONArray times = response.getJSONObject("chart").getJSONArray("result").getJSONObject(0).getJSONArray("timestamp");
                             JSONArray prices = response.getJSONObject("chart").getJSONArray("result").getJSONObject(0).getJSONObject("indicators").getJSONArray("quote").getJSONObject(0).getJSONArray("close");
 
-                            Log.i("NetaDATA", metaData.toString());
-                            Log.i("TimeStamps", times.toString());
-                            Log.i("pricesCloses", prices.toString());
-
                             DecimalFormat df = new DecimalFormat("#.00");
                             double prevClose;
 
-                            try {
-                                prevClose = metaData.getDouble("previousClose");
-                            } catch (JSONException e) {
-                                try {
-                                    prevClose = metaData.getDouble("chartPreviousClose");
-                                } catch (Exception ee) { prevClose = 0; }
 
-                            }
+                            JSONObject openTimeObject = metaData.getJSONObject("currentTradingPeriod").getJSONObject("regular");
+                            long openTime = openTimeObject.getLong("start"); //9:30 time
 
-                            DecimalFormat ndf = new DecimalFormat("###,###,###.##");
-                            String prevCloseString = ndf.format(prevClose);
-
-
-                            Log.i("PREV", prevClose + "");
-
-                            ArrayList<String> xLabels = new ArrayList<>();
                             final String months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
+
+                            ArrayList<Float> openPrices = new ArrayList<>();
+                            for (int i = 0; i < prices.length(); i++) {
+                                float epoch = times.getLong(i);
+                                if(epoch > openTime) openPrices.add(epoch);
+                            }
 
                             ArrayList<Entry> values = new ArrayList<>();
                             for (int i = 0; i < prices.length(); i++) {
@@ -948,64 +1020,70 @@ public class MainActivity extends AppCompatActivity {
                                     float epoch = times.getLong(i);
                                     double price = prices.getDouble(i);
 
+                                    if((!state.equals("Market Closed ") && !state.equals("Pre-Market")) && dataGranularity.equals("1m") && openPrices.size() > 3 && epoch < openTime) continue;
+
                                     price = Double.parseDouble(df.format(price));
 
-                                    Log.i("MYPRICE", price+"");
                                     values.add(new Entry(epoch, (float) price));
 
-                                    SimpleDateFormat dateFormat = new SimpleDateFormat("MM dd yyyy hh mm aa");
-                                    String[] dateInfo = dateFormat.format(new Date((long) epoch * 1000)).split(" ");
-
-                                    int monthIndex = Integer.parseInt(dateInfo[0]) - 1;
-                                    String dayString = dateInfo[1];
-                                    if(dayString.startsWith("0")) dayString = dayString.substring(1);
-
-                                    String yearString = dateInfo[2];
                                 } catch (Exception e) { }
                             }
 
+                            values.get(values.size()-1).setY((float) currentPrice); //change last value to the latest
 
-                            chart.setDrawGridBackground(false);
-                            chart.setTouchEnabled(true);
-                            chart.setDragEnabled(true);
-                            chart.setScaleEnabled(true);
-                            chart.setPinchZoom(true);
+                            //Get previous
 
-                            chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-                            chart.getAxisLeft().setEnabled(true);
-                            chart.getAxisLeft().setZeroLineColor(Color.TRANSPARENT);
-                            chart.getAxisRight().setEnabled(false);
+                            //At close check
+                            if(dataGranularity.equals("1m")) {
+                                if(state.equals("After Hours") || state.equals("Pre-Market") || state.equals("Market Closed")) {
+                                    if(symbol.startsWith("^")) { //for index and ETFs
+                                        atCloseIndicator.setVisibility(View.INVISIBLE);
+                                        atClosePercent.setVisibility(View.INVISIBLE);
+                                        atCloseChange.setVisibility(View.INVISIBLE);
+                                        atClosePrice.setVisibility(View.INVISIBLE);
+                                    } else {
+                                        atCloseIndicator.setVisibility(View.VISIBLE);
+                                        atClosePercent.setVisibility(View.VISIBLE);
+                                        atCloseChange.setVisibility(View.VISIBLE);
+                                        atClosePrice.setVisibility(View.VISIBLE);
+                                    }
+                                } else if (state.equals("Market Open")) {
+                                    atCloseIndicator.setVisibility(View.INVISIBLE);
+                                    atClosePercent.setVisibility(View.INVISIBLE);
+                                    atCloseChange.setVisibility(View.INVISIBLE);
+                                    atClosePrice.setVisibility(View.INVISIBLE);
+                                }
+                            }
 
-                            chart.getXAxis().setDrawGridLines(false);
-                            chart.getAxisLeft().setDrawGridLines(false);
-                            chart.getAxisRight().setDrawGridLines(false);
 
-                            chart.getDescription().setEnabled(false);
+                            prevClose = values.get(0).getY(); //get first value
 
-//        chart.getDescription().setText("Eastern Time");
-//        chart.getDescription().setTextColor(Color.WHITE);
+                            try {
+                                prevClose = metaData.getDouble("chartPreviousClose");
 
-                            chart.getLegend().setEnabled(false);
+                            } catch (Exception b) {
+//                                try {
+//                                    prevClose = metaData.getDouble("chartPreviousClose");
+//                                } catch (Exception e) { }
+                            }
 
-                            chart.setDrawBorders(false);
-                            chart.setBorderColor(Color.RED);
 
-                            chart.getAxisLeft().setDrawLabels(false);
-                            chart.getAxisRight().setDrawLabels(false);
-                            chart.getAxisLeft().setAxisLineColor(Color.TRANSPARENT);
-                            chart.setExtraOffsets(30, 0, 30, 0);
-                            chart.getXAxis().setTextSize(10f);
+                            DecimalFormat ndf = new DecimalFormat("###,###,##0.00");
+                            String prevCloseString = ndf.format(prevClose);
 
-                            chart.getXAxis().setCenterAxisLabels(false);
-
-                            chart.getXAxis().removeAllLimitLines();
+                            //Chart settings
+                            setChartSettings();
+                            if(!isRefresh) chart.fitScreen();
 
                             LimitLine limitLine = new LimitLine((float)prevClose);
                             limitLine.enableDashedLine(20f, 8f, 0f);
                             limitLine.setLineColor(Color.WHITE);
-                            limitLine.setLabel("$"+prevCloseString);
-                            limitLine.setTextColor(Color.WHITE);
-                            limitLine.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_BOTTOM);
+
+
+                            chart.getDescription().setText("Prev Close: $"+prevCloseString);
+                            chart.getDescription().setTextColor(Color.WHITE);
+                            chart.getDescription().setXOffset(4);
+                            chart.getDescription().setYOffset(2);
 
                             chart.getAxisLeft().addLimitLine(limitLine);
                             chart.getAxisRight().setTextColor(Color.WHITE); // left y-axis
@@ -1018,40 +1096,53 @@ public class MainActivity extends AppCompatActivity {
 
                             LineDataSet set = new LineDataSet(values, "My Stock Chart");
 
-                            set.setColor(Color.WHITE);
-                            set.setLineWidth(2f);
                             set.setDrawCircleHole(false);
                             set.setDrawCircles(false);
                             set.setDrawIcons(false);
-                            set.setValueTextSize(9f);
-                            set.setDrawFilled(true);
+                            set.setValueTextSize(10f);
                             set.setDrawValues(false);
                             set.setDrawHorizontalHighlightIndicator(false);
                             set.setHighLightColor(Color.WHITE);
-                            set.setHighlightLineWidth(2f);
+                            set.setHighlightLineWidth(1.8f);
+                            set.setLineWidth(2f);
+                            set.setDrawFilled(true);
 
                             //to make the smooth line as the graph is adrapt change so smooth curve
-                            set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                            //to enable the cubic density : if 1 then it will be sharp curve
-                            set.setCubicIntensity(0.05f);
+                            if (state.equals("Market Open") && dataGranularity.equals("1m")) {
+                                set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                                set.setCubicIntensity(0.05f);
+                                if(openPrices.size() < 60) {
+                                    set.setCubicIntensity(.1f);
+                                }
+                            }
 
+                            //to enable the cubic density : if 1 then it will be sharp curve
+
+                            double lastPrice = values.get(values.size()-1).getY();
                             // set color of filled area
-                            if (Utils.getSDKInt() >= 18) {
+
+
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                                 // drawables only supported on api level 18 and above
-                                if (dollar.getText().toString().startsWith("-")) {
+                                if (lastPrice < prevClose) {
                                     Drawable drawable = ContextCompat.getDrawable(getApplicationContext(), R.drawable.fade_red);
                                     set.setFillDrawable(drawable);
+                                    set.setColor(getResources().getColor(R.color.red_circle));
                                 } else {
                                     Drawable drawable = ContextCompat.getDrawable(getApplicationContext(), R.drawable.fade_green);
                                     set.setFillDrawable(drawable);
+                                    set.setColor(getResources().getColor(R.color.green_underline));
                                 }
                             } else {
-                                if (dollar.getText().toString().startsWith("-")) {
-                                    Drawable drawable = ContextCompat.getDrawable(getApplicationContext(), R.drawable.solid_red);
-                                    set.setFillDrawable(drawable);
+                                if (lastPrice < prevClose) {
+//                                    Drawable drawable = ContextCompat.getDrawable(getApplicationContext(), R.drawable.solid_red);
+//                                    set.setFillDrawable(drawable);
+                                    set.setColor(getResources().getColor(R.color.red_circle));
                                 } else {
-                                    Drawable drawable = ContextCompat.getDrawable(getApplicationContext(), R.drawable.solid_green);
-                                    set.setFillDrawable(drawable);
+//                                    Drawable drawable = ContextCompat.getDrawable(getApplicationContext(), R.drawable.solid_green);
+//                                    set.setFillDrawable(drawable);
+                                    set.setColor(getResources().getColor(R.color.green_underline));
                                 }
                             }
                             ArrayList<ILineDataSet> dataSets = new ArrayList<>();
@@ -1061,49 +1152,46 @@ public class MainActivity extends AppCompatActivity {
                             // create a data object with the data sets
                             final LineData data = new LineData(dataSets);
 
-
                             // set data
                             chart.setData(data);
 
-
                             chart.getXAxis().setLabelCount(4, true);
-
                             chart.getXAxis().setValueFormatter(new ValueFormatter() {
                                 @Override
                                 public String getFormattedValue(float value) {
-                                    SimpleDateFormat dateFormat = new SimpleDateFormat("MM dd yyyy hh mm aa");
+                                    SimpleDateFormat dateFormat = new SimpleDateFormat("MM dd yyyy hh mm aa EEE");
                                     String[] dateInfo = dateFormat.format(new Date((long) value * 1000)).split(" ");
 
                                     int monthIndex = Integer.parseInt(dateInfo[0]) - 1;
                                     String dayString = dateInfo[1];
                                     if(dayString.startsWith("0")) dayString = dayString.substring(1);
 
-                                    String yearString = dateInfo[2];
+                                    String hourString = dateInfo[3];
+                                    if(hourString.startsWith("0")) hourString = hourString.substring(1);
+
+                                    String time = "";
+                                    switch (dataGranularity) {
+                                        case "1m":
+                                            chart.getXAxis().setLabelCount(5, true);
+                                            time = hourString + ":" + dateInfo[4] + " " + dateInfo[5] ;
+                                            if(time.startsWith("0")) return time.substring(1);
+                                            return time;
+                                        case "15m":
+                                        case "1h":
+                                        case "1d":
+                                            return months[monthIndex] + " " + dayString;
+                                        case "1mo":
+                                            chart.getXAxis().setLabelCount(3, true);
+                                            time = months[monthIndex] + " " + dayString + ", " + dateInfo[2];
+                                            return time;
+                                    }
 
                                     return months[monthIndex] + " " + dayString + "" ;
 
                                 }
                             });
 
-                            for (int i = 0; i < chart.getXAxis().getLabelCount(); i++) {
-                                Log.i("LABEL", chart.getXAxis().getFormattedLabel(i));
-                            }
-
-                            //chart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xLabels));
-//        Toast.makeText(getApplicationContext(),chart.getAxisLeft().getAxisMaximum()+"",Toast.LENGTH_SHORT).show();
-
-                            //Make cubic
-//                            List<ILineDataSet> sets = chart.getData().getDataSets();
-//                            for (ILineDataSet iSet : sets) {
-//
-//                                LineDataSet set1 = (LineDataSet) iSet;
-//                                set.setMode(set1.getMode() == LineDataSet.Mode.CUBIC_BEZIER
-//                                        ? LineDataSet.Mode.LINEAR : LineDataSet.Mode.CUBIC_BEZIER);
-//                            }
-
                             chart.invalidate();
-
-                            //if (!isRefresh) chart.animateY(2000, Easing.EaseInCubic);
 
                             if (isRefresh && chart.getVisibility() == View.VISIBLE && isChartFocus) {
                                 hideDetails();
@@ -1114,27 +1202,160 @@ public class MainActivity extends AppCompatActivity {
                                     showInfo();
                                     hideDetails();
 
-                                        chart.setVisibility(View.VISIBLE);
-                                        if (dollar.getText().toString().startsWith("-")) {
-                                            priceStatus.setBackgroundResource(R.drawable.red_circle_back);
-                                            priceStatus.setRotationX(180);
-                                        } else {
-                                            priceStatus.setBackgroundResource(R.drawable.green_circle_back);
-                                            priceStatus.setRotationX(0);
-                                        }
-                                        priceStatus.setVisibility(View.VISIBLE);
-                                        isChartFocus = true;
+                                    chart.setVisibility(View.VISIBLE);
+                                    oneDay.setVisibility(View.VISIBLE);
+                                    oneMonth.setVisibility(View.VISIBLE);
+                                    threeMonths.setVisibility(View.VISIBLE);
+                                    oneYear.setVisibility(View.VISIBLE);
+                                    allTime.setVisibility(View.VISIBLE);
+                                    moreInfo.setVisibility(View.VISIBLE);
+
+                                    isChartFocus = true;
 
                                 } else {
                                     showInfo();
+                                    showDetails();
                                     chart.setVisibility(View.INVISIBLE);
+                                    oneDay.setVisibility(View.INVISIBLE);
+                                    oneMonth.setVisibility(View.INVISIBLE);
+                                    threeMonths.setVisibility(View.INVISIBLE);
+                                    oneYear.setVisibility(View.INVISIBLE);
+                                    allTime.setVisibility(View.INVISIBLE);
+                                    moreInfo.setVisibility(View.INVISIBLE);
+                                    isChartFocus = false;
                                 }
                             }
 
+                            chartPreviousClose = prevClose;
+
+                            DecimalFormat unitFormat;
+
+                            if (currentPrice < 1) {
+                                unitFormat = new DecimalFormat("###,###,###,###,###,###.###");
+                                unitFormat.setDecimalSeparatorAlwaysShown(true);
+                                unitFormat.setMinimumFractionDigits(3);
+                            } else {
+                                unitFormat = new DecimalFormat("###,###,###,###,###,###.##");
+                                unitFormat.setDecimalSeparatorAlwaysShown(true);
+                                unitFormat.setMinimumFractionDigits(2);
+                            }
+
+                            switch (dataGranularity) {
+                                case "1m":
+                                    toggleTime();
+                                    timeSpan = "1d";
+                                    if(lastPrice < prevClose) {
+                                        oneDay.setBackgroundResource(R.drawable.red_time_back);
+                                    } else {
+                                        oneDay.setBackgroundResource(R.drawable.green_time_back);
+                                    }
+                                    break;
+                                case "15m":
+                                    toggleTime();
+                                    timeSpan = "1month";
+                                    if(lastPrice < prevClose) {
+                                        oneMonth.setBackgroundResource(R.drawable.red_time_back);
+                                    } else {
+                                        oneMonth.setBackgroundResource(R.drawable.green_time_back);
+                                    }
+                                    break;
+                                case "1h":
+                                    toggleTime();
+                                    timeSpan = "3m";
+                                    if(lastPrice < prevClose) {
+                                        threeMonths.setBackgroundResource(R.drawable.red_time_back);
+                                    } else {
+                                        threeMonths.setBackgroundResource(R.drawable.green_time_back);
+                                    }
+                                    break;
+                                case "1d":
+                                    toggleTime();
+                                    timeSpan = "1y";
+                                    if(lastPrice < prevClose) {
+                                        oneYear.setBackgroundResource(R.drawable.red_time_back);
+                                    } else {
+                                        oneYear.setBackgroundResource(R.drawable.green_time_back);
+                                    }
+                                    break;
+                                case "1mo":
+                                    toggleTime();
+                                    timeSpan = "all";
+                                    if(lastPrice < prevClose) {
+                                        allTime.setBackgroundResource(R.drawable.red_time_back);
+                                    } else {
+                                        allTime.setBackgroundResource(R.drawable.green_time_back);
+                                    }
+                                    break;
+                            }
+
+
+                            //Blink change
+                            if(isRefresh && !price.getText().toString().substring(1).equals(currentPrice+"")) {
+                                String cp = price.getText().toString().substring(1).replace(",", "");
+                                String np = currentPrice+"";
+                                double current = Double.parseDouble(cp);
+                                double newPrice = Double.parseDouble(np);
+                                blickChange(newPrice - current);
+                            }
+                            price.setText("$"+unitFormat.format(currentPrice)+"");
+
+                            String percentString = "", dollarString = "";
+
+                            if(!dataGranularity.equals("1m")) {
+                                double dollarDiff = currentPrice - chartPreviousClose;
+                                double changePercent = (dollarDiff / chartPreviousClose) * 100;
+
+                                if(dollarDiff < 0) {
+                                    percentString = "(" + unitFormat.format(Math.abs(changePercent)) + "%)";
+                                    dollarString =  unitFormat.format(dollarDiff);
+                                    dollar.setTextColor(getResources().getColor(R.color.red));
+                                    percent.setTextColor(getResources().getColor(R.color.red));
+                                    dollar.setText(dollarString);
+                                    percent.setText(percentString);
+                                } else {
+                                    percentString = "(" + unitFormat.format(Math.abs(changePercent)) + "%)";
+                                    dollarString = "+" + unitFormat.format(dollarDiff);
+                                    dollar.setTextColor(getResources().getColor(R.color.green));
+                                    percent.setTextColor(getResources().getColor(R.color.green));
+                                    dollar.setText(dollarString);
+                                    percent.setText(percentString);
+                                }
+                            } else {
+                                if(dollarChange < 0) {
+                                    percentString = "(" + unitFormat.format(Math.abs(percentChange)) + "%)";
+                                    dollarString =  unitFormat.format(dollarChange);
+                                    dollar.setTextColor(getResources().getColor(R.color.red));
+                                    percent.setTextColor(getResources().getColor(R.color.red));
+                                    dollar.setText(dollarString);
+                                    percent.setText(percentString);
+                                } else {
+                                    percentString = "(" + unitFormat.format(Math.abs(percentChange)) + "%)";
+                                    dollarString = "+" + unitFormat.format(dollarChange);
+                                    dollar.setTextColor(getResources().getColor(R.color.green));
+                                    percent.setTextColor(getResources().getColor(R.color.green));
+                                    dollar.setText(dollarString);
+                                    percent.setText(percentString);
+                                }
+                            }
+
+
+                            if (dollar.getText().toString().startsWith("-")) {
+                                priceStatus.setBackgroundResource(R.drawable.red_circle_back);
+                                priceStatus.setRotationX(180);
+                            } else {
+                                priceStatus.setBackgroundResource(R.drawable.green_circle_back);
+                                priceStatus.setRotationX(0);
+                            }
+
+                                if(isChartFocus && atClosePrice.getVisibility() == View.INVISIBLE) {
+                                    priceStatus.setVisibility(View.VISIBLE);
+                                } else {
+                                    priceStatus.setVisibility(View.INVISIBLE);
+                                }
+
                             stopRepeating();
 
-                            startRepearting();
-
+                            startRepeating();
 
                             marketStatus.setText(state);
                             marketStatus.setVisibility(View.VISIBLE);
@@ -1143,7 +1364,6 @@ public class MainActivity extends AppCompatActivity {
                             direction_text.setText(R.string.search_for_symbols_or_companies);
 
                         } catch (JSONException e) {
-                            Log.i("errors", e.toString());
                             stopRepeating();
                             clearInfo();
                             direction_text.setText("Error requesting '" + symbol + "' ticker symbol. Please try again");
@@ -1191,21 +1411,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private class AxisFormatter extends ValueFormatter implements IAxisValueFormatter {
-
-        @Override
-        public String getFormattedValue(float value, AxisBase axis) {
-            return "Day";
-        }
-    }
-
-    private class ValueFormmater extends ValueFormatter implements IValueFormatter {
-        @Override
-        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-            return "3";
-        }
-    }
-
     /**
      * Blink price on change
      * @param change
@@ -1229,8 +1434,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Start auto refresh
      */
-    public void startRepearting() {
-        if(state.equals("Market Closed")) {
+    public void startRepeating() {
+        if(state.equals("Market Closed ")) {
             stopRepeating();
         } else {
             if(state.equals("Market Open")) {
@@ -1252,7 +1457,7 @@ public class MainActivity extends AppCompatActivity {
     private Runnable mRefreshRunnable = new Runnable() {
         @Override
         public void run() {
-            getStock(ticker.getText().toString(), true);
+            getStock(ticker.getText().toString(), true, timeSpan);
         }
     };
 
@@ -1406,6 +1611,12 @@ public class MainActivity extends AppCompatActivity {
         direction_text.setVisibility(View.VISIBLE);
 
         chart.setVisibility(View.INVISIBLE);
+        oneDay.setVisibility(View.INVISIBLE);
+        oneMonth.setVisibility(View.INVISIBLE);
+        threeMonths.setVisibility(View.INVISIBLE);
+        oneYear.setVisibility(View.INVISIBLE);
+        allTime.setVisibility(View.INVISIBLE);
+        moreInfo.setVisibility(View.INVISIBLE);
 
         pinButton.setVisibility(View.INVISIBLE);
         error_refresh.setVisibility(View.INVISIBLE);
@@ -1416,6 +1627,7 @@ public class MainActivity extends AppCompatActivity {
         atClosePrice.setVisibility(View.INVISIBLE);
         dayStatus.setVisibility(View.INVISIBLE);
         priceStatus.setVisibility(View.INVISIBLE);
+        viewChart.setVisibility(View.INVISIBLE);
 
         refreshLayout.setEnabled(false);
     }
@@ -1432,6 +1644,12 @@ public class MainActivity extends AppCompatActivity {
         chart.setVisibility(View.VISIBLE);
         dayStatus.setVisibility(View.VISIBLE);
         priceStatus.setVisibility(View.VISIBLE);
+        oneDay.setVisibility(View.VISIBLE);
+        oneMonth.setVisibility(View.VISIBLE);
+        threeMonths.setVisibility(View.VISIBLE);
+        oneYear.setVisibility(View.VISIBLE);
+        allTime.setVisibility(View.VISIBLE);
+        moreInfo.setVisibility(View.VISIBLE);
         for (TextView view : textViews) {
             if (view != marketStatus && view != direction_text) {
                 view.setVisibility(View.VISIBLE);
@@ -1452,6 +1670,7 @@ public class MainActivity extends AppCompatActivity {
         avg_vol_unit.setVisibility(View.INVISIBLE);
         market_cap.setVisibility(View.INVISIBLE);
         market_cap_unit.setVisibility(View.INVISIBLE);
+        viewChart.setVisibility(View.INVISIBLE);
     }
 
     public void showDetails() {
@@ -1467,7 +1686,49 @@ public class MainActivity extends AppCompatActivity {
         avg_vol_unit.setVisibility(View.VISIBLE);
         market_cap.setVisibility(View.VISIBLE);
         market_cap_unit.setVisibility(View.VISIBLE);
+        viewChart.setVisibility(View.VISIBLE);
     }
+
+    //Apply settings to chart
+    public void setChartSettings() {
+        chart.setDrawGridBackground(false);
+        chart.setTouchEnabled(true);
+        chart.setDragEnabled(true);
+        chart.setScaleEnabled(true);
+        chart.setPinchZoom(true);
+
+        chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        chart.getAxisLeft().setEnabled(true);
+        chart.getAxisLeft().setZeroLineColor(Color.TRANSPARENT);
+        chart.getAxisRight().setEnabled(false);
+
+        chart.getXAxis().setDrawGridLines(false);
+        chart.getAxisLeft().setDrawGridLines(false);
+        chart.getAxisRight().setDrawGridLines(false);
+
+        chart.getDescription().setEnabled(true);
+
+        chart.getLegend().setEnabled(false);
+
+        chart.setDrawBorders(false);
+        chart.setBorderColor(Color.RED);
+
+        chart.getAxisLeft().setDrawLabels(false);
+        chart.getAxisRight().setDrawLabels(false);
+        chart.getAxisLeft().setAxisLineColor(Color.TRANSPARENT);
+        chart.setExtraOffsets(30, 0, 30, 0);
+        chart.getXAxis().setTextSize(10f);
+
+        chart.getLegend().setWordWrapEnabled(true);
+
+        chart.getXAxis().removeAllLimitLines();
+        chart.getAxisLeft().removeAllLimitLines();
+        chart.getAxisRight().removeAllLimitLines();
+
+        chart.getXAxis().setAxisLineColor(Color.TRANSPARENT);
+
+    }
+
 
     public void hideHeader() {
         ticker.setVisibility(View.INVISIBLE);
@@ -1495,15 +1756,104 @@ public class MainActivity extends AppCompatActivity {
         dayStatus.setVisibility(View.VISIBLE);
     }
 
+    public void toggleTime() {
+        oneDay.setBackgroundResource(android.R.color.transparent);
+        oneMonth.setBackgroundResource(android.R.color.transparent);
+        threeMonths.setBackgroundResource(android.R.color.transparent);
+        oneYear.setBackgroundResource(android.R.color.transparent);
+        allTime.setBackgroundResource(android.R.color.transparent);
+        moreInfo.setBackgroundResource(android.R.color.transparent);
+    }
+
+
     public void toggleChart(View v) {
+        DecimalFormat unitFormat;
+
+        if (currentPrice < 1) {
+            unitFormat = new DecimalFormat("###,###,###,###,###,###.###");
+            unitFormat.setDecimalSeparatorAlwaysShown(true);
+            unitFormat.setMinimumFractionDigits(3);
+        } else {
+            unitFormat = new DecimalFormat("###,###,###,###,###,###.##");
+            unitFormat.setDecimalSeparatorAlwaysShown(true);
+            unitFormat.setMinimumFractionDigits(2);
+        }
+
+        String percentString = "", dollarString = "";
+
         if (chart.getVisibility() == View.VISIBLE) {
             chart.setVisibility(View.INVISIBLE);
-            priceStatus.setBackgroundResource(R.color.transparent);
+            oneDay.setVisibility(View.INVISIBLE);
+            oneMonth.setVisibility(View.INVISIBLE);
+            threeMonths.setVisibility(View.INVISIBLE);
+            oneYear.setVisibility(View.INVISIBLE);
+            allTime.setVisibility(View.INVISIBLE);
+            moreInfo.setVisibility(View.INVISIBLE);
+            priceStatus.setVisibility(View.INVISIBLE);
+
+            if (percentChange < 0) { //Set color for change
+                percentString = "(" + unitFormat.format(Math.abs(percentChange)) + "%)";
+                dollarString = unitFormat.format(dollarChange);
+                dollar.setTextColor(getResources().getColor(R.color.red));
+                percent.setTextColor(getResources().getColor(R.color.red));
+                dollar.setText(dollarString);
+                percent.setText(percentString);
+                dollar.setTextColor(getResources().getColor(R.color.red));
+                percent.setTextColor(getResources().getColor(R.color.red));
+                priceStatus.setRotationX(180);
+            } else {
+                percentString = "(" + unitFormat.format(Math.abs(percentChange)) + "%)";
+                dollarString = "+" + unitFormat.format(dollarChange);
+                dollar.setTextColor(getResources().getColor(R.color.green));
+                percent.setTextColor(getResources().getColor(R.color.green));
+                dollar.setText(dollarString);
+                percent.setText(percentString);
+                dollar.setTextColor(getResources().getColor(R.color.green));
+                percent.setTextColor(getResources().getColor(R.color.green));
+                priceStatus.setRotationX(0);
+            }
+
+            if(state.equals("After Hours") || state.equals("Pre-Market") || state.equals("Market Closed")) {
+                if(ticker.getText().toString().startsWith("^")) { //for index and ETFs
+                    atCloseIndicator.setVisibility(View.INVISIBLE);
+                    atClosePercent.setVisibility(View.INVISIBLE);
+                    atCloseChange.setVisibility(View.INVISIBLE);
+                    atClosePrice.setVisibility(View.INVISIBLE);
+                } else {
+                    atCloseIndicator.setVisibility(View.VISIBLE);
+                    atClosePercent.setVisibility(View.VISIBLE);
+                    atCloseChange.setVisibility(View.VISIBLE);
+                    atClosePrice.setVisibility(View.VISIBLE);
+                    priceStatus.setVisibility(View.INVISIBLE);
+                }
+            } else if (state.equals("Market Open")) {
+                atCloseIndicator.setVisibility(View.INVISIBLE);
+                atClosePercent.setVisibility(View.INVISIBLE);
+                atCloseChange.setVisibility(View.INVISIBLE);
+                atClosePrice.setVisibility(View.INVISIBLE);
+            }
+
+            timeSpan = "1d";
+
             showDetails();
             isChartFocus = false;
         } else {
             hideDetails();
-            chart.setVisibility(View.VISIBLE);
+
+            if(oneDay.getBackground() != getResources().getDrawable(R.drawable.green_time_back)) {
+                toggleTime();
+                oneDay.setBackgroundResource(R.drawable.green_time_back);
+                timeSpan = "1d";
+                getStock(ticker.getText().toString(), false, "1d");
+            } else {
+                chart.setVisibility(View.VISIBLE);
+                oneDay.setVisibility(View.VISIBLE);
+                oneMonth.setVisibility(View.VISIBLE);
+                threeMonths.setVisibility(View.VISIBLE);
+                oneYear.setVisibility(View.VISIBLE);
+                allTime.setVisibility(View.VISIBLE);
+                moreInfo.setVisibility(View.VISIBLE);
+            }
             if (dollar.getText().toString().startsWith("-")) {
                 priceStatus.setBackgroundResource(R.drawable.red_circle_back);
                 priceStatus.setRotationX(180);
@@ -1511,9 +1861,9 @@ public class MainActivity extends AppCompatActivity {
                 priceStatus.setBackgroundResource(R.drawable.green_circle_back);
                 priceStatus.setRotationX(0);
             }
-            priceStatus.setVisibility(View.VISIBLE);
             isChartFocus = true;
         }
+        vibrator.vibrate(40);
     }
 
 
@@ -1575,7 +1925,13 @@ public class MainActivity extends AppCompatActivity {
 
         chart = findViewById(R.id.stockChart);
         priceStatus = findViewById(R.id.chartIndicator);
-
+        viewChart = findViewById(R.id.view_chart_btn);
+        oneDay = findViewById(R.id.one_day);
+        oneMonth = findViewById(R.id.one_month);
+        threeMonths = findViewById(R.id.three_month);
+        oneYear = findViewById(R.id.one_year);
+        allTime = findViewById(R.id.allTime);
+        moreInfo = findViewById(R.id.more_stock_info);
 
     }
 
@@ -1755,12 +2111,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void removeBubble() {
-        if (isMyServiceRunning(BubbleService.class) && BubbleService.bubbleViewManager != null) {
-            stopService(new Intent(getApplicationContext(), BubbleService.class));
-        }
-    }
-
     private void addNewBubble() {
         if (!isMyServiceRunning(BubbleService.class)) {
             // launch service
@@ -1886,7 +2236,7 @@ public class MainActivity extends AppCompatActivity {
 
         stockStore = retrieveStockStore();
         if(ticker.getVisibility() == View.VISIBLE) {
-            getStock(ticker.getText().toString(), true);
+            getStock(ticker.getText().toString(), true, timeSpan);
         }
 
         super.onResume();

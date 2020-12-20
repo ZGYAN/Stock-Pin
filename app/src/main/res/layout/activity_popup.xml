@@ -72,10 +72,27 @@
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="bold"
+                android:onClick="toggleChart"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/bticker"
                 app:layout_constraintTop_toBottomOf="@+id/bticker" />
+
+            <ImageView
+                android:id="@+id/bchartIndicator"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:onClick="toggleChart"
+                android:background="@drawable/green_circle_back"
+                android:padding="2dp"
+                android:rotationX="180"
+                app:layout_constraintStart_toEndOf="@+id/bprice"
+                app:layout_constraintTop_toTopOf="@+id/bprice"
+                app:srcCompat="@drawable/ic_notify"
+                tools:ignore="VectorDrawableCompat" />
 
             <TextView
                 android:id="@+id/closeBprice"
@@ -86,6 +103,7 @@
                 android:textColor="@color/whitefade"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                android:onClick="toggleChart"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.916"
                 app:layout_constraintStart_toStartOf="@+id/bticker"
@@ -101,6 +119,7 @@
                 android:textColor="@color/whitefade"
                 android:textSize="14sp"
                 android:textStyle="bold"
+                android:onClick="toggleChart"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.895"
                 app:layout_constraintStart_toStartOf="@+id/bticker"
@@ -115,6 +134,7 @@
                 android:textColor="@color/green"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:onClick="toggleChart"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/bprice"
@@ -128,6 +148,7 @@
                 android:text="@string/_0000_00"
                 android:textColor="@color/green"
                 android:textSize="14sp"
+                android:onClick="toggleChart"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/closeBpercent_change"
                 app:layout_constraintHorizontal_bias="0.989"
@@ -146,6 +167,7 @@
                 android:textColor="@color/red"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:onClick="toggleChart"
                 app:layout_constraintBottom_toBottomOf="@+id/bdollar_change"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.01"
@@ -168,6 +190,113 @@
                 app:layout_constraintTop_toBottomOf="@+id/closeBprice"
                 app:layout_constraintVertical_bias="0.0" />
 
+
+            <!-- Time interval choices -->
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/bstockChart"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                app:layout_constraintBottom_toBottomOf="@+id/blow_price"
+                app:layout_constraintTop_toBottomOf="@+id/bpercent_change"
+                app:layout_constraintVertical_bias="0.0"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:orientation="horizontal"
+                android:weightSum="6"
+                android:layout_marginTop="12dp"
+                android:paddingHorizontal="20dp"
+                app:layout_constraintTop_toBottomOf="@id/bstockChart"
+                >
+
+
+                <Button
+                    android:id="@+id/bone_day"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/green_time_back"
+                    android:text="1D"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/bone_month"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:text="1M"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/bthree_month"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:text="3M"
+                    android:textColor="@color/white"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/bone_year"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:text="1Y"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/ballTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:text="All"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/bmore_stock_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:src="@drawable/ic_more_info"
+                    android:textColor="@color/white"
+                    android:onClick="toggleChart"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+
             <TextView
                 android:id="@+id/bopen_title"
                 android:layout_width="wrap_content"
@@ -176,6 +305,7 @@
                 android:text="@string/open"
                 android:textColor="@color/whitefade"
                 android:textSize="16sp"
+                android:onClick="toggleChart"
                 app:layout_constraintEnd_toStartOf="@+id/bvolume_title"
                 app:layout_constraintHorizontal_bias="0.354"
                 app:layout_constraintStart_toStartOf="@+id/bdollar_change"
@@ -189,6 +319,7 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:onClick="toggleChart"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/bopen_title"
@@ -201,6 +332,7 @@
                 android:layout_marginTop="12dp"
                 android:text="@string/high"
                 android:textColor="@color/whitefade"
+                android:onClick="toggleChart"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toStartOf="@+id/bavg_volume_title"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -213,6 +345,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/_1_500_00"
                 android:textColor="@color/white"
+                android:onClick="toggleChart"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/baverage_volume_unit"
@@ -226,6 +359,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:text="@string/low"
+                android:onClick="toggleChart"
                 android:textColor="@color/whitefade"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toStartOf="@+id/bmarketCap_title"
@@ -238,6 +372,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/_1_500_00"
+                android:onClick="toggleChart"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -252,6 +387,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:text="@string/volume"
+                android:onClick="toggleChart"
                 android:textColor="@color/whitefade"
                 android:textSize="16sp"
                 app:layout_constraintStart_toEndOf="@+id/bmarketStatus"
@@ -264,6 +400,7 @@
                 android:text="@string/_100_000_000"
                 android:textColor="@color/white"
                 android:textSize="16sp"
+                android:onClick="toggleChart"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -277,6 +414,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="84dp"
                 android:text="@string/average_volume"
+                android:onClick="toggleChart"
                 android:textColor="@color/whitefade"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -290,6 +428,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/_100_000_000"
+                android:onClick="toggleChart"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -304,6 +443,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:text="@string/market_cap"
+                android:onClick="toggleChart"
                 android:textColor="@color/whitefade"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -315,6 +455,7 @@
                 android:id="@+id/bmarketCap_listing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="toggleChart"
                 android:text="@string/marketCAP"
                 android:textColor="@color/white"
                 android:textSize="16sp"
@@ -391,13 +532,16 @@
                 tools:ignore="VectorDrawableCompat" />
 
             <Button
-                android:id="@+id/dismiss_btn"
-                android:layout_width="87dp"
-                android:layout_height="32dp"
+                android:id="@+id/bview_chart"
+                android:layout_width="84dp"
+                android:layout_height="27dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/simple_button"
-                android:text="@string/dismiss"
+                android:text="View chart"
                 android:textColor="@color/white"
+                android:onClick="toggleChart"
+                android:textSize="12sp"
+                android:padding="4dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

@@ -26,6 +26,7 @@
 
     <color name="greenCard">#4B8C00</color>
     <color name="green_circle">#28C62E</color>
+    <color name="green_underline">#67DF6C</color>
 
     <color name="purpleCard">#7C0091</color>
     <color name="purple_circle">#AF24C6</color>

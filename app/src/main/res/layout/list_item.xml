@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:background="@color/transparent"
     android:layout_height="wrap_content">
@@ -34,6 +35,16 @@
         android:layout_alignRight="@+id/item_background_circle"
         android:gravity="center_horizontal"
         android:layout_marginLeft="10dp" />
+
+    <ImageView
+        android:id="@+id/item_remove"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="-18dp"
+        android:layout_marginLeft="-18dp"
+        android:layout_marginTop="2dp"
+        android:layout_toRightOf="@+id/item_text"
+        app:srcCompat="@drawable/remove" />
 
 
 </RelativeLayout>

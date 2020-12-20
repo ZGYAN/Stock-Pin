@@ -29,10 +29,12 @@ public class NetworkRequest {
         return stockLink + symbol;
     }
 
-    public String getChart(String symbol, String startEpoch, String dataGranularity) {
-        Log.i("error",chartLink + symbol +"?symbol=" + symbol + "&period1=" + startEpoch + "&period2=9999999999&interval="+ dataGranularity +"&includePrePost=true");
-        return chartLink + symbol +"?symbol=" + symbol + "&period1=" + startEpoch + "&period2=9999999999&interval="+ dataGranularity +"&includePrePost=true";
-
+    public String getChart(String symbol, String startEpoch, String dataGranularity, boolean includePrePost) {
+        if(includePrePost) {
+            return chartLink + symbol +"?symbol=" + symbol + "&period1=" + startEpoch + "&period2=9999999999&interval="+ dataGranularity +"&includePrePost=true";
+        } else {
+            return chartLink + symbol +"?symbol=" + symbol + "&period1=" + startEpoch + "&period2=9999999999&interval="+ dataGranularity +"&includePrePost=false";
+        }
     }
 
     /**

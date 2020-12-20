@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,10 +45,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         if (tickers.get(position).isFocus()) {
             holder.circle.setImageResource(R.drawable.circle_borders);
+            holder.remove.setVisibility(View.VISIBLE);
         } else {
             holder.circle.setImageResource(R.color.transparent);
-        }
+            holder.remove.setVisibility(View.INVISIBLE);
 
+        }
 
     }
 
@@ -60,15 +63,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     //Holds UI elements
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        ImageView circle;
+        ImageView circle, remove;
         TextView listTicker;
 
         OnItemClicked onItemClicked;
 
-        public ViewHolder(View itemView, OnItemClicked onItemClicked) {
+        public ViewHolder(View itemView, final OnItemClicked onItemClicked) {
             super(itemView);
             circle = itemView.findViewById(R.id.item_background_circle);
             listTicker = itemView.findViewById(R.id.item_text);
+            remove = itemView.findViewById(R.id.item_remove);
 
             settings = mContext.getSharedPreferences("com.stockpin.Settings", Context.MODE_PRIVATE);
             int bubbleColor = settings.getInt("bubbleColor", 1);
@@ -93,19 +97,30 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     break;
             }
 
+
             this.onItemClicked = onItemClicked;
-            itemView.setOnClickListener(this);
+
+            circle.setOnClickListener(this);
+            remove.setOnClickListener(this);
         }
+
 
 
         @Override
         public void onClick(View v) {
-            onItemClicked.onItemClick(getAdapterPosition());
+            if (v.getId() == R.id.item_remove) {
+                onItemClicked.onDeleteClick(getAdapterPosition());
+            } else {
+                onItemClicked.onItemClick(getAdapterPosition());
+            }
+
         }
+
     }
     //Declare interface
     public interface OnItemClicked {
         void onItemClick(int position);
+        void onDeleteClick(int position);
     }
 
 

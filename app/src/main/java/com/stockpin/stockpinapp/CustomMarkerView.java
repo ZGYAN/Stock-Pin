@@ -1,6 +1,7 @@
 package com.stockpin.stockpinapp;
 
 import android.content.Context;
+import android.view.View;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.components.MarkerView;
@@ -8,6 +9,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,15 +17,20 @@ import java.util.Date;
 public class CustomMarkerView extends MarkerView {
 
     private final TextView tvContent;
+    public static boolean canScroll;
     public CustomMarkerView(Context context, int layoutResource) {
         super(context, layoutResource);
         tvContent = findViewById(R.id.markContent);
+        canScroll = true;
     }
 
     // runs every time the MarkerView is redrawn, can be used to update the
     // content (user-interface)
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
+
+        canScroll = true;
+
 
         tvContent.setSingleLine(false);
 
@@ -38,10 +45,17 @@ public class CustomMarkerView extends MarkerView {
 
         String yearString = dateInfo[2];
 
+        DecimalFormat ndf = new DecimalFormat("###,###,##0.00");
+        String priceString = ndf.format(e.getY());
 
-        tvContent.setText("$" + e.getY() + " \n" + months[monthIndex] + " " + dayString + " " + yearString + " " + dateInfo[3] + " " + dateInfo[4] + " " + dateInfo[5]);
+        String hourString = dateInfo[3];
+        if(hourString.startsWith("0")) hourString = hourString.substring(1);
+
+
+        tvContent.setText("$" + priceString + " \n" + months[monthIndex] + " " + dayString + ", " + yearString + " " + hourString + ":" + dateInfo[4] + " " + dateInfo[5]);
 //            tvContent.setText(Utils.formatNumber(e.getY(), 0, false));
 
+        canScroll = true;
 
         super.refreshContent(e, highlight);
     }

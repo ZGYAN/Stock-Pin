@@ -1,8 +1,11 @@
 package com.stockpin.stockpinapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -11,17 +14,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
-
 public class About extends AppCompatActivity {
 
     TextView privacy, terms;
     ImageView about, source;
     ImageButton back, share;
     Vibrator vibrator;
+    ConstraintLayout aboutScreen;
 
+    SharedPreferences settingsPreferences;
 
 
     @Override
@@ -35,7 +36,9 @@ public class About extends AppCompatActivity {
         source = findViewById(R.id.source);
         terms = findViewById(R.id.terms);
         share = findViewById(R.id.shareButton);
+        aboutScreen = findViewById(R.id.aboutScreen);
 
+        settingsPreferences = getSharedPreferences("com.stockpin.Settings", Context.MODE_PRIVATE);
 
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 

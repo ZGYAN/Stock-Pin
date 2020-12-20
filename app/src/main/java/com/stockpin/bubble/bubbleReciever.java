@@ -69,6 +69,9 @@ public class bubbleReciever extends BroadcastReceiver {
 
         //Add new bubble
         addNewBubble(context);
+//        Intent openBubble = new Intent(context, bubblePopup.class);
+//        openBubble.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP | Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        context.startActivity(openBubble);
 
     }
 
@@ -81,6 +84,9 @@ public class bubbleReciever extends BroadcastReceiver {
                 try {
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.canDrawOverlays(context)) {
                         context.startService(blowBubble);
+                        Intent openBubble = new Intent(context, bubblePopup.class);
+                        openBubble.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(openBubble);
                     } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
                         Toast.makeText(context, "Permission Not Enabled", Toast.LENGTH_SHORT).show();
                         SharedPreferences settingsPreferences = context.getSharedPreferences("com.stockpin.Settings", Context.MODE_PRIVATE);
@@ -90,6 +96,9 @@ public class bubbleReciever extends BroadcastReceiver {
                     }
                     else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                         context.startService(blowBubble);
+                        Intent openBubble = new Intent(context, bubblePopup.class);
+                        openBubble.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(openBubble);
                     }
 
                 } catch (Exception e) {

@@ -1,6 +1,7 @@
 package com.stockpin.stockpinapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import android.app.ActivityManager;
@@ -37,7 +38,7 @@ import jp.co.recruit_lifestyle.android.floatingview.FloatingViewManager;
 
 public class AppSettings extends AppCompatActivity {
     ImageButton exitSettings;
-    Switch enableBubbles, hideOnFullscreen;
+    Switch enableBubbles, hideOnFullscreen, priceAlert;
     ImageView blueBubble, redBubble, yellowBubble, greenBubble, purpleBubble, blackBubble;
     Button aboutApp;
     SharedPreferences settingsPreferences;
@@ -50,8 +51,9 @@ public class AppSettings extends AppCompatActivity {
 
     NotificationManager notificationManager;
     int permissionInt, colorChoice;
-    boolean hideOnFull;
+    boolean hideOnFull, isAlerting;
     FrameLayout adFrame;
+    ConstraintLayout settingsScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,7 @@ public class AppSettings extends AppCompatActivity {
         exitSettings = findViewById(R.id.exitSettings);
         enableBubbles = findViewById(R.id.enableBubbleSwitch);
         hideOnFullscreen = findViewById(R.id.enableOnFullscreenSwitch);
+        priceAlert = findViewById(R.id.priceAlertSwitch);
         aboutApp = findViewById(R.id.about_btn);
         blueBubble = findViewById(R.id.blueChoice);
         redBubble = findViewById(R.id.redChoice);
@@ -69,9 +72,11 @@ public class AppSettings extends AppCompatActivity {
         purpleBubble = findViewById(R.id.purpleChoice);
         blackBubble = findViewById(R.id.blackChoice);
         adFrame = findViewById(R.id.settingsAdFrame);
+        settingsScreen = findViewById(R.id.settingsScreen);
 
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+        loadSettings();
 
         //Load banner ad
         settingsBanner = new AdView(this);
@@ -83,8 +88,6 @@ public class AppSettings extends AppCompatActivity {
         settingsTransitionAd.setAdUnitId(getString(R.string.testFullscreenAd));
         settingsTransitionAd.loadAd(new AdRequest.Builder().build());
 
-
-
         settingsTransitionAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
@@ -93,7 +96,6 @@ public class AppSettings extends AppCompatActivity {
             }
         });
 
-        loadSettings();
 
         aboutApp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,6 +126,9 @@ public class AppSettings extends AppCompatActivity {
                         colorChoice = 1;
                         setBubble();
                         hideOnFullscreen.setClickable(true);
+                        priceAlert.setClickable(true);
+                        isAlerting = true;
+                        priceAlert.setChecked(isAlerting);
 
                     }
                 } else {
@@ -132,6 +137,8 @@ public class AppSettings extends AppCompatActivity {
                     setBubble();
                     hideOnFullscreen.setChecked(false);
                     hideOnFullscreen.setClickable(false);
+                    priceAlert.setChecked(false);
+                    priceAlert.setClickable(false);
                 }
             }
         });
@@ -150,6 +157,28 @@ public class AppSettings extends AppCompatActivity {
                 }
             }
         });
+
+        priceAlert.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!isChecked) {
+                    notificationManager.cancelAll();
+                }
+            }
+        });
+
+//        darkThemeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    isDark = true;
+//                    settingsScreen.setBackgroundResource(R.color.black);
+//                } else {
+//                    isDark = false;
+//                    settingsScreen.setBackgroundResource(R.drawable.back);
+//                }
+//            }
+//        });
 
         blueBubble.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -394,12 +423,15 @@ public class AppSettings extends AppCompatActivity {
         }
 
         hideOnFull = hideOnFullscreen.isChecked();
+        isAlerting = priceAlert.isChecked();
 
         SharedPreferences settingsPreferences = getSharedPreferences("com.stockpin.Settings", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settingsPreferences.edit();
         editor.putInt("permission", permissionInt);
         editor.putInt("bubbleColor", colorChoice);
         editor.putBoolean("hideOnFull", hideOnFull);
+        editor.putBoolean("isAlerting", isAlerting);
+
 
         editor.commit();
     }
@@ -415,10 +447,27 @@ public class AppSettings extends AppCompatActivity {
         permissionInt = settingsPreferences.getInt("permission", -1);
         colorChoice = settingsPreferences.getInt("bubbleColor", 1); //1 - 6 (grid layout)
         hideOnFull = settingsPreferences.getBoolean("hideOnFull", false);
+        isAlerting = settingsPreferences.getBoolean("isAlerting", true);
 
-        enableBubbles.setChecked(permissionInt == 1);
+
+        if (permissionInt == 1) {
+            hideOnFullscreen.setChecked(hideOnFull);
+            priceAlert.setChecked(isAlerting);
+            hideOnFullscreen.setClickable(true);
+            priceAlert.setClickable(true);
+        } else {
+            hideOnFull = false;
+            isAlerting = false;
+            hideOnFullscreen.setChecked(false);
+            priceAlert.setChecked(false);
+            hideOnFullscreen.setClickable(false);
+            priceAlert.setClickable(false);
+        }
+
+
+       enableBubbles.setChecked(permissionInt == 1);
         setBubble();
-        hideOnFullscreen.setChecked(hideOnFull);
+
 
     }
 
@@ -480,6 +529,10 @@ public class AppSettings extends AppCompatActivity {
                 SharedPreferences.Editor editor = settingsPreferences.edit();
                 editor.putInt("permission", 1);
                 editor.putInt("bubbleColor", 1);
+                hideOnFullscreen.setClickable(true);
+                priceAlert.setClickable(true);
+                isAlerting = true;
+                priceAlert.setChecked(isAlerting);
                 editor.commit();
 
             }

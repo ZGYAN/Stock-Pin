@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/back"
+    android:id="@+id/settingsScreen"
     tools:context="com.stockpin.stockpinapp.AppSettings">
 
 
@@ -282,6 +283,60 @@
 
             </RelativeLayout>
 
+
+            <!-- Fourth Setting -->
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignTop="@+id/priceAlertTitle"
+                    android:layout_marginTop="-16dp"
+                    android:background="@android:color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/priceAlertTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Price Alerts"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/priceAlertDes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/priceAlertTitle"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="22dp"
+                    android:text="Bubble will pulse during price alerts"
+                    android:textColor="@color/whitefade"
+                    android:textSize="16sp"
+                    android:layout_alignParentLeft="true" />
+
+                <Switch
+                    android:id="@+id/priceAlertSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginEnd="18dp"
+                    android:checked="false"
+                    android:scaleX="1.25"
+                    android:scaleY="1.25"
+                    tools:ignore="UseSwitchCompatOrMaterialXml"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="18dp" />
+
+
+            </RelativeLayout>
 
         </LinearLayout>
 

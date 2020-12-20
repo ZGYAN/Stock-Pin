@@ -24,7 +24,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="C:\Users\ACHUNA~1\AppData\Local\Temp\round_show_chart_24.xml" />
+                                                <entry key="imagePath" value="C:\Users\ACHUNA~1\AppData\Local\Temp\baseline_more_horiz_24.xml" />
                                                 <entry key="opacityPercent" value="80" />
                                                 <entry key="paddingPercent" value="5" />
                                                 <entry key="trimmed" value="true" />
@@ -38,7 +38,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="file:/$PROJECT_DIR$/../../AndroidSDK/icons/material/materialiconsround/show_chart/round_show_chart_24.xml" />
+                                                <entry key="url" value="file:/$PROJECT_DIR$/../../AndroidSDK/icons/material/materialicons/more_horiz/baseline_more_horiz_24.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -84,7 +84,7 @@
                                   <option name="values">
                                     <map>
                                       <entry key="imageAsset" value="C:\Users\Achuna Ofonedu\Pictures\Stock Pin Pictures\bubble.png" />
-                                      <entry key="outputName" value="market_down" />
+                                      <entry key="outputName" value="ic_more_info" />
                                       <entry key="theme" value="CUSTOM" />
                                       <entry key="themeColor" value="ffffff" />
                                     </map>
